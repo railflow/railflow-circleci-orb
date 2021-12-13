@@ -14,12 +14,12 @@ Create a new personal token
 
 ## Prepare CLI to author orbs
 
-1. Install circleci cli
+### 1. Install circleci cli
 ```
 brew install circleci
 ```
 
-2. Copy .env.sample to .env and replace add the circleci token
+### 2. Copy .env.sample to .env and replace add the circleci token
 ```
 $ cp .env.sample .env
 $ echo "export CIRCLECI_CLI_TOKEN=e23b5346..." > .env
