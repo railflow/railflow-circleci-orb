@@ -28,13 +28,13 @@ $ source .env
 
 ## Authoring circleci orbs
 
-###1. Create a namespace for the organization to host the orb.
+### 1. Create a namespace for the organization to host the orb.
 **Note**: organization needs to exist in github.com and you need to have permissions to it.
 ```
 $ circleci namespace create railflow-1 github devsekops
 ```
 
-###2. <a name="create">Create a new orb in the namespace</a>
+### 2. <a name="create">Create a new orb in the namespace</a>
 ```
 $ circleci orb create railflow-1/railflow-1-orb
 ```
@@ -52,7 +52,7 @@ Note: If the following issue is encounter:
 Please note that any versions you publish of this orb are world-readable.
 You can now register versions of `railflow-1/railflow-1-orb` using `circleci orb publish`.
 
-###3. <a name="publish">Publish the orb</a>
+### 3. <a name="publish">Publish the orb</a>
  ```
  $ circleci orb publish  promote railflow-1/railflow-1-orb@dev:0.0.1 patch
  ```
