@@ -1,0 +1,166 @@
+---
+version: 2.1
+description: "Railflow testing framework with TestRail utility orb"
+
+executors:
+  default:
+    description: "Railflow docker container executor"
+    docker:
+      - image: railflow/railflow
+
+commands:
+  test:
+    description: "Run railflow testing"
+    parameters:
+      RAILFLOW_KEY:
+        type: "string"
+        description: "License key for online activation"
+        default: ""
+      RAILFLOW_URL:
+        type: "string"
+        description: "TestRail URL"
+        default: ""
+      RAILFLOW_USERNAME:
+        type: "string"
+        description: "TestRail username"
+        default: ""
+      RAILFLOW_PASSWORD:
+        type: "string"
+        description: "TestRail password or API Key"
+        default: ""
+      RAILFLOW_PROJECT_NAME:
+        type: "string"
+        description: "TestRail project name"
+        default: ""
+      RAILFLOW_PROJECT_PATH:
+        type: "string"
+        description: "TestRail test cases path"
+        default: ""
+      RAILFLOW_REPORT_FORMAT:
+        type: "string"
+        description: "Report format:\n
+          JUnit, TestNg, TestNg-Steps, Cucumber, NUnit, Allure, Robot, TRX (case insensitive)"
+        default: ""
+      RAILFLOW_REPORT_PATH:
+        type: "string"
+        description: "The file path(s) to the test report file(s) generated during the build.\n
+          User can pass multiple values separated with spaces.\n
+          Ant-style patterns such as **/surefire-reports/*.xml can be used.\n
+          E.g. use target/surefire-reports/*.xml to capture all XML files in target/surefire-reports directory"
+        default: ""
+      RAILFLOW_SEARCH_MODE:
+        type: "string"
+        description: "Specifies the test case lookup algorithm.\n
+                                     'name': search for test case matching the name within the entire test suite. If test case\n
+                                     found, update the test case. If test case not found, create a new test case within\n
+                                     specified `-path`\n
+                                     'path': search for test case matching the name within the specified `-path`. If test case\n
+                                     found, update the test case. If test case not found, create a new test case within\n
+                                     specified `-path`"
+        default: "path"
+      RAILFLOW_TEST_PLAN:
+        type: "string"
+        description: "TestRail test plan Name"
+        default: "TestPlanName"
+      RAILFLOW_TEST_RUN:
+        type: "string"
+        description: "TestRail test run name"
+        default: "TestRunName"
+      RAILFLOW_ASSIGN_FAILURE_TO:
+        type: "string"
+        description: "Smart Test Failure Assignment.\n
+          Comma-separated list of TestRail users (email addresses).\n
+          Railflow will assign failures based on a round robin algorithm."
+        default: ""
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.11
+
+      - run:
+          name: "Checking parameters"
+          command: |
+            #!/usr/bin/env bash
+            set -o errexit
+            set -o nounset
+            set -o pipefail
+            set -ex
+
+            if [ -z "<< parameters.RAILFLOW_KEY >>" ]; then
+                echo "RAILFLOW_KEY parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_URL >>" ]; then
+                echo "RAILFLOW_URL parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_USERNAME >>" ]; then
+                echo "RAILFLOW_USERNAME parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_PASSWORD >>" ]; then
+                echo "RAILFLOW_PASSWORD parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_PROJECT_NAME >>" ]; then
+                echo "RAILFLOW_PROJECT_NAME parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_PROJECT_PATH >>" ]; then
+                echo "RAILFLOW_PROJECT_PATH parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_REPORT_FORMAT >>" ]; then
+                echo "RAILFLOW_REPORT_FORMAT parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_REPORT_PATH >>" ]; then
+                echo "RAILFLOW_REPORT_PATH parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_SEARCH_MODE >>" ]; then
+                echo "RAILFLOW_SEARCH_MODE parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_TEST_PLAN >>" ]; then
+                echo "RAILFLOW_TEST_PLAN parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_TEST_RUN >>" ]; then
+                echo "RAILFLOW_TEST_RUN parameters must be present"
+                exit -1
+            fi
+            if [ -z "<< parameters.RAILFLOW_ASSIGN_FAILURE_TO >>" ]; then
+                echo "RAILFLOW_ASSIGN_FAILURE_TO parameters must be present"
+                exit -1
+            fi
+      - run:
+          name: "Run railflow testing"
+          command: |
+            #!/usr/bin/env bash
+            set -o errexit
+            set -o nounset
+            set -o pipefail
+            set -ex
+
+            RAILFLOW_KEY=<< parameters.RAILFLOW_KEY >>
+            RAILFLOW_URL=<< parameters.RAILFLOW_URL >>
+            RAILFLOW_USERNAME=<< parameters.RAILFLOW_USERNAME >>
+            RAILFLOW_PASSWORD=<< parameters.RAILFLOW_PASSWORD >>
+            RAILFLOW_PROJECT_NAME=<< parameters.RAILFLOW_PROJECT_NAME >>
+            RAILFLOW_PROJECT_PATH=<< parameters.RAILFLOW_PROJECT_PATH >>
+            RAILFLOW_REPORT_FORMAT=<< parameters.RAILFLOW_REPORT_FORMAT >>
+            RAILFLOW_REPORT_PATH=<< parameters.RAILFLOW_REPORT_PATH >>
+            RAILFLOW_SEARCH_MODE=<< parameters.RAILFLOW_SEARCH_MODE >>
+            RAILFLOW_TEST_PLAN=<< parameters.RAILFLOW_TEST_PLAN >>
+            RAILFLOW_TEST_RUN=<< parameters.RAILFLOW_TEST_RUN >>
+            RAILFLOW_ASSIGN_FAILURE_TO=<< parameters.RAILFLOW_ASSIGN_FAILURE_TO >>
+
+            EXIT_STATUS=0
+            # load helper functions
+            source run_test
+
+            exec_tests
+
+            # exit_status=0 it means successful run and !0 it means an error
+            exit EXIT_STATUS
