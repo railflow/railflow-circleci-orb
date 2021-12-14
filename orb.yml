@@ -1,6 +1,6 @@
 ---
 version: 2.1
-description: "Railflow testing framework with TestRail utility orb"
+description: "Railflow is a set of solutions that allows organizations to integrate various test frameworks and CI applications with TestRail. By integrating all testing activities with TestRail using Railflow, engineering teams can bring all testing metrics under a single platform - TestRail."
 
 executors:
   default:
