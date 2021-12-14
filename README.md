@@ -53,7 +53,7 @@ You can now register versions of `railflow-1/railflow-1-orb` using `circleci orb
 
 #### 3. <a name="publish">Publish the orb</a>
  ```
- $ circleci orb publish  promote railflow-1/railflow-1-orb@dev:0.0.1 patch
+ $ circleci orb publish  promote railflow/railflow-orb@dev:0.0.1 patch
  ```
 #### 4. Update orb source code
 Edit orb.yml or run_test.sh file to include new functionality and execute [Step 3](#publish)
