@@ -126,10 +126,6 @@ commands:
                 echo "RAILFLOW_TEST_PLAN parameters must be present"
                 exit -1
             fi
-            if [ -z "<< parameters.RAILFLOW_TEST_RUN >>" ]; then
-                echo "RAILFLOW_TEST_RUN parameters must be present"
-                exit -1
-            fi
             if [ -z "<< parameters.RAILFLOW_ASSIGN_FAILURE_TO >>" ]; then
                 echo "RAILFLOW_ASSIGN_FAILURE_TO parameters must be present"
                 exit -1
@@ -143,6 +139,9 @@ commands:
             set -o pipefail
             set -ex
 
+            # install missing dependencies
+            cd /usr/railflow && npm install node-libcurl
+
             RAILFLOW_KEY=<< parameters.RAILFLOW_KEY >>
             RAILFLOW_URL=<< parameters.RAILFLOW_URL >>
             RAILFLOW_USERNAME=<< parameters.RAILFLOW_USERNAME >>
@@ -153,14 +152,31 @@ commands:
             RAILFLOW_REPORT_PATH=<< parameters.RAILFLOW_REPORT_PATH >>
             RAILFLOW_SEARCH_MODE=<< parameters.RAILFLOW_SEARCH_MODE >>
             RAILFLOW_TEST_PLAN=<< parameters.RAILFLOW_TEST_PLAN >>
-            RAILFLOW_TEST_RUN=<< parameters.RAILFLOW_TEST_RUN >>
             RAILFLOW_ASSIGN_FAILURE_TO=<< parameters.RAILFLOW_ASSIGN_FAILURE_TO >>
 
             EXIT_STATUS=0
-            # load helper functions
-            source run_test
+
+
+            function exec_tests() {
+
+              if ! (npx railflow \
+                -k    $RAILFLOW_KEY \
+                -url  $RAILFLOW_URL \
+                -u    $RAILFLOW_USERNAME \
+                -p    $RAILFLOW_PASSWORD \
+                -pr   $RAILFLOW_PROJECT_NAME \
+                -path $RAILFLOW_PROJECT_PATH \
+                -f    $RAILFLOW_REPORT_FORMAT \
+                -r    $RAILFLOW_REPORT_PATH \
+                -sm   $RAILFLOW_SEARCH_MODE \
+                -tp   $RAILFLOW_TEST_PLAN \
+                -a    $RAILFLOW_ASSIGN_FAILURE_TO \
+                ) ; then
+                  EXIT_STATUS=1
+              fi
+            }
 
             exec_tests
 
             # exit_status=0 it means successful run and !0 it means an error
-            exit EXIT_STATUS
+            exit $EXIT_STATUS
